@@ -1,0 +1,7 @@
+# The main machine
+- hosts: all
+  roles:
+    - sog.de
+    - letsencrypt
+  vars:
+    domain: neu.studieren-ohne-grenzen.org

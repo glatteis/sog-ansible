@@ -1,0 +1,5 @@
+all:
+  hosts:
+    neu.studieren-ohne-grenzen.org:
+  vars:
+    ansible_user: root

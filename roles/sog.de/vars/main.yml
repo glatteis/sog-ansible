@@ -1,0 +1,49 @@
+---
+nginx_access_log: "/var/log/nginx/access.log main"
+nginx_vhosts:
+  - listen: 80
+    extra_parameters: |
+      return 301 https://$host$request_uri
+
+  - listen: "443 ssl http2"
+    server_name: "cloud.{{domain}} owncloud.{{domain}}"
+    access_log: ""
+    error_log: ""
+    state: "present"
+    template: "{{ nginx_vhost_template }}"
+    filename: "nextcloud.conf"
+    extra_parameters: |
+      location / {
+        client_max_body_size 512M;
+
+        proxy_pass http://127.0.0.1:8080;
+        proxy_set_header    Host            $host;
+        proxy_set_header    X-Real-IP       $remote_addr;
+        proxy_set_header    X-Forwarded-for $remote_addr;
+        port_in_redirect off;
+        proxy_connect_timeout 300;
+      }
+
+  - listen: "443 ssl http2"
+    server_name: "ldap.admin.{{domain}}"
+    access_log: "/var/log/nginx/phpldapadmin.access.log"
+    error_log: "/var/log/nginx/phpldapadmin.error.log"
+    state: "present"
+    template: "{{ nginx_vhost_template }}"
+    filename: "nextcloud.conf"
+    extra_parameters: |
+      location /phpldapadmin {
+              alias /usr/share/phpldapadmin/htdocs;
+              index index.php index.html index.htm;
+      }
+
+      location ~ ^/phpldapadmin/.*\.php$ {
+              root /usr/share;
+              if ($request_filename !~* htdocs) {
+                      rewrite ^/phpldapadmin(/.*)?$ /phpldapadmin/htdocs$1;
+              }
+              fastcgi_pass 127.0.0.1:9000;
+              fastcgi_index index.php;
+              fastcgi_param SCRIPT_FILENAME $request_filename;
+              include fastcgi_params;
+      }
