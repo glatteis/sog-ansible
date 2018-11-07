@@ -1,0 +1,28 @@
+---
+
+- import_role:
+    name: docker
+
+- name: Ensure Nextcloud docker path exists
+  file:
+    path: "{{ nextcloud_directory }}"
+    state: directory
+    mode: 0750
+
+- name: Ensure Nextcloud base path exists
+  file:
+    path: "{{ nextcloud_directory_root }}"
+    state: directory
+    mode: 0750
+
+- name: Ensure nextcloud.service installed
+  template:
+    src: "{{ role_path }}/templates/nextcloud.service.j2"
+    dest: "/etc/systemd/system/nextcloud.service"
+    mode: 0644
+
+- name: Ensure docker-compose.yml is installed
+  template:
+    src: "{{ role_path }}/templates/docker-compose.yml.j2"
+    dest: "{{ nextcloud_directory }}/docker-compose.yml"
+    mode: 0644

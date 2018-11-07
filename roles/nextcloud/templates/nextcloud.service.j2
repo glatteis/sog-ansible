@@ -1,0 +1,16 @@
+[Unit]
+Description=Nextcloud Apache server
+After=docker.service
+Requires=docker.service
+Requires=mysqld.service
+
+[Service]
+Type=simple
+ExecStartPre=/usr/bin/docker-compose -f {{nextcloud_directory}}/docker-compose.yml down
+ExecStart=/usr/bin/docker-compose -f {{nextcloud_directory}}/docker-compose.yml up
+ExecStop=/usr/bin/docker-compose -f {{nextcloud_directory}}/docker-compose.yml down
+Restart=always
+RestartSec=30
+
+[Install]
+WantedBy=multi-user.target

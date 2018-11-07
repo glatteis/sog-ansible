@@ -1,0 +1,32 @@
+version: '2'
+
+services:
+  nextcloud:
+    image: nextcloud
+    ports:
+      - "{{nextcloud_port}}:80"
+    volumes:
+      - "{{nextcloud_directory_root}}:/var/www/html"
+      - "{{nextcloud_directory_data}}":/var/www/html/data
+    networks:
+      - dockernet
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD={{mysql_root_password}}
+      - MYSQL_PASSWORD={{nextcloud_mysql_password}}
+      - MYSQL_DATABASE={{nextcloud_mysql_db}}
+      - MYSQL_USER={{nextcloud_mysql_user}}
+      - MYSQL_HOST=172.16.238.1
+      - NEXTCLOUD_ADMIN_USER={{nextcloud_admin_user}}
+      - NEXTCLOUD_ADMIN_PASSWORD={{nextcloud_admin_password}}
+      - NEXTCLOUD_TABLE_PREFIX=oc_
+
+networks:
+    dockernet:
+      driver: bridge
+      ipam:
+        driver: default
+        config:
+        -
+          subnet: 172.16.238.0/24
+          gateway: 172.16.238.1
