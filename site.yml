@@ -1,7 +1,8 @@
 # The main machine
-- hosts: all
+- hosts: sog_de
   roles:
-    - sog.de
     - letsencrypt
+    - geerlingguy.nginx
+    - nextcloud
   vars:
     domain: neu.studieren-ohne-grenzen.org

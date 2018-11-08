@@ -1,5 +1,6 @@
 all:
-  hosts:
-    159.69.213.57:
+  children:
+    sog_de:
+      159.69.213.57:
   vars:
     ansible_user: root
