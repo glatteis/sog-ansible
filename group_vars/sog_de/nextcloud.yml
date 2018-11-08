@@ -1,0 +1,8 @@
+---
+nextcloud_port: 8080
+nextcloud_directory: /opt/nextcloud
+nextcloud_directory_root: /var/www/services/nextcloud
+nextcloud_directory_data: /StorageBox/Nextcloud/data
+nextcloud_mysql_db: nextcloud
+nextcloud_mysql_user: nextcloud
+nextcloud_admin_user: admin

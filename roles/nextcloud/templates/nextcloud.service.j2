@@ -6,11 +6,11 @@ Requires=mariadb.service
 
 [Service]
 Type=forking
-ExecStartPre=/usr/bin/docker-compose -f {{nextcloud_directory}}/docker-compose.yml down
-ExecStart=/usr/bin/docker-compose -f {{nextcloud_directory}}/docker-compose.yml up
-ExecStop=/usr/bin/docker-compose -f {{nextcloud_directory}}/docker-compose.yml down
+ExecStartPre=/usr/bin/docker-compose -f {{nextcloud_directory}}/docker-compose.yml stop
+ExecStart=/usr/bin/docker-compose -f {{nextcloud_directory}}/docker-compose.yml start
+ExecStop=/usr/bin/docker-compose -f {{nextcloud_directory}}/docker-compose.yml stop
 Restart=always
-RestartSec=30
+RestartSec=500
 
 [Install]
 WantedBy=multi-user.target
