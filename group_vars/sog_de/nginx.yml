@@ -1,7 +1,8 @@
 ---
 nginx_access_log: "/var/log/nginx/access.log main"
 nginx_vhosts:
-  - listen: 80
+  - listen: 80 default_server
+    server_name: _
     extra_parameters: |
       return 301 https://$host$request_uri
 
