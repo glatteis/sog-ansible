@@ -1,5 +1,5 @@
 all:
   hosts:
-    neu.studieren-ohne-grenzen.org:
+    159.69.213.57:
   vars:
     ansible_user: root
