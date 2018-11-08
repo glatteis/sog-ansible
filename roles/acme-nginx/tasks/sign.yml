@@ -14,11 +14,16 @@
   - name: Concat openssl_san.cnf with global config
     shell: "cat /etc/ssl/openssl.cnf {{ current_domain_folder }}/openssl_san.cnf > {{ current_domain_folder }}/openssl_concat.cnf"
     changed_when: no
-    
+    when: ansible_facts['os_family'] == "Debian"
+
+  - name: Concat openssl_san.cnf with global config
+    shell: "cat /etc/pki/tls/openssl.cnf {{ current_domain_folder }}/openssl_san.cnf > {{ current_domain_folder }}/openssl_concat.cnf"
+    changed_when: no
+    when: ansible_facts['distribution'] == "CentOS"
+
   - name: Ensure that we have a domain CSR (multi mode)
     shell: "openssl req -new -sha256 -key {{ current_domain_folder }}/domain.key -subj \"/\" -reqexts SAN -config {{ current_domain_folder }}/openssl_concat.cnf > {{ current_domain_folder }}/domain.csr"
     args:
       creates: "{{ current_domain_folder }}/domain.csr"
 
   when: current_sub_domains|length
-

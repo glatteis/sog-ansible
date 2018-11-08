@@ -10,7 +10,7 @@
   copy:
     dest: "{{ acme_challenges_folder_path }}/{{ acme_challenge['challenge_data'][copy_item]['http-01']['resource']|basename }}"
     content: "{{ acme_challenge['challenge_data'][copy_item]['http-01']['resource_value'] }}"
-    mode: 777
+    mode: 0777
   when: acme_challenge|changed
   with_items: "{{ current_sub_domains }}"
   loop_control:

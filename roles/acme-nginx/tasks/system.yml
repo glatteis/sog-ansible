@@ -1,5 +1,7 @@
 - name: Ensure packages needed for basic ACME provisioning are present
-  yum: name=openssl state=present
+  package:
+    name: openssl
+    state: present
 
 - name: Ensure that our ACME user exists
   user:

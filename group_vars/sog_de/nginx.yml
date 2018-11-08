@@ -5,14 +5,14 @@ nginx_vhosts:
   - listen: 80 default_server
     filename: "initial.site.conf"
     server_name: _
-    state: 'present'
+    state: 'absent'
     extra_parameters: |
       include snippets/acme_well_known.conf;
 
   - listen: 80 default_server
     filename: "default.site.conf"
     server_name: _
-    state: 'absent'
+    state: 'present'
     extra_parameters: |
       return 301 https://$host$request_uri;
 
@@ -20,7 +20,7 @@ nginx_vhosts:
     server_name: "cloud.{{domain}} owncloud.{{domain}}"
     access_log: "/var/log/nginx/nextcloud.access.log"
     error_log: "/var/log/nginx/nextcloud.error.log"
-    state: "absent"
+    state: "present"
     template: "{{ nginx_vhost_template }}"
     filename: "nextcloud.site.conf"
     extra_parameters: |
@@ -41,7 +41,7 @@ nginx_vhosts:
     server_name: "ldap.admin.{{domain}}"
     access_log: "/var/log/nginx/phpldapadmin.access.log"
     error_log: "/var/log/nginx/phpldapadmin.error.log"
-    state: "absent"
+    state: "present"
     template: "{{ nginx_vhost_template }}"
     filename: "ldapadmin.site.conf"
     extra_parameters: |
@@ -65,4 +65,6 @@ nginx_vhosts:
 
 acme_ssl_base_folder: /opt/mysslstuff
 acme_challenges_folder_path: "{{ acme_ssl_base_folder }}/challenges"
-acme_domains: "{{ nginx_vhosts|map(attribute='server_name')|map('split', ' ')|flatten|select('match', '.*\\..*')|list}}"
+acme_multi_domains:
+  - base_name: "{{domain}}"
+    domains: "{{ nginx_vhosts|map(attribute='server_name')|map('split', ' ')|flatten|select('match', '.*\\..*')|list}}"

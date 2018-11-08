@@ -2,6 +2,6 @@
     current_domain: "{{ item }}"
 
 - set_fact:
-    current_sub_domains: []
+    current_sub_domains: ["{{item}}"]
 
 - include: domain.yml
