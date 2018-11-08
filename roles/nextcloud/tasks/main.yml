@@ -31,3 +31,10 @@
     src: "{{ role_path }}/templates/docker-compose.yml.j2"
     dest: "{{ nextcloud_directory }}/docker-compose.yml"
     mode: 0644
+
+- name: Make sure nextcloud service is running
+  systemd:
+    name: nextcloud
+    daemon_reload: yes
+    enabled: yes
+    state: restarted

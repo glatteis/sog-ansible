@@ -2,10 +2,10 @@
 Description=Nextcloud Apache server
 After=docker.service
 Requires=docker.service
-Requires=mysqld.service
+Requires=mariadb.service
 
 [Service]
-Type=simple
+Type=forking
 ExecStartPre=/usr/bin/docker-compose -f {{nextcloud_directory}}/docker-compose.yml down
 ExecStart=/usr/bin/docker-compose -f {{nextcloud_directory}}/docker-compose.yml up
 ExecStop=/usr/bin/docker-compose -f {{nextcloud_directory}}/docker-compose.yml down
