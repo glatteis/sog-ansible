@@ -1,0 +1,2 @@
+[SAN]
+subjectAltName={% for domain in current_sub_domains %}DNS:{{ domain }}{% if not loop.last %},{% endif %}{% endfor %}

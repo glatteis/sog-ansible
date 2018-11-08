@@ -1,8 +1,11 @@
 # The main machine
 - hosts: sog_de
   roles:
-    - letsencrypt
     - geerlingguy.nginx
+    - acme-nginx
     - nextcloud
   vars:
     domain: neu.studieren-ohne-grenzen.org
+  tasks:
+    - name: Restart nginx
+      service: name=nginx state=restarted

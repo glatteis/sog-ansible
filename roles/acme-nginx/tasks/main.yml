@@ -1,0 +1,10 @@
+- include: system.yml
+- include: nginx.yml
+- meta: flush_handlers # nginx has to be restarted right now if it has to
+
+- include: domain_single.yml
+  with_items: "{{ acme_domains }}"
+
+- include: domain_multi.yml
+  with_items: "{{ acme_multi_domains }}"
+

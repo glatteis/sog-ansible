@@ -1,0 +1,48 @@
+- name: Ensure packages needed for basic ACME provisioning are present
+  yum: name=openssl state=present
+
+- name: Ensure that our ACME user exists
+  user:
+    name: "{{ acme_user }}"
+    createhome: no
+
+- name: Setup our base SSL folder
+  file:
+    path: "{{ acme_ssl_base_folder | mandatory }}"
+    state: directory
+    owner: "{{ acme_user }}"
+    group: nginx
+    mode: 0750
+
+# Why 3 actions instead of one? Previously, we would simply have a command redirecting its output
+# to account.key and that command had a "creates:" argument. The problem was that under some
+# conditions that could never be figured out, we would sometimes end up with an empty account.key
+# file and that this would break the whole role workflow. That action was split into 3 actions like
+# that to make sure that a failure in the openssl command doesn't create an empty account key file.
+
+- name: Check if the account.key file already exists
+  stat: path="{{ acme_ssl_base_folder }}/account.key"
+  register: account_key_file
+
+- name: Generates a letsencrypt account key if necessary
+  command: "openssl genrsa 4096"
+  register: account_key
+  when: not account_key_file.stat.exists
+
+- name: Copy the account key to the appropriate file
+  copy: content="{{ account_key.stdout }}" dest="{{ acme_ssl_base_folder }}/account.key"
+  when: account_key is defined and account_key.stdout is defined
+
+- name: setup account key perms
+  file:
+    path: "{{ acme_ssl_base_folder }}/account.key"
+    owner: "{{ acme_user }}"
+    mode: 0600
+
+- name: Setup challenges folder
+  file:
+    path: "{{ acme_challenges_folder_path | mandatory }}"
+    state: directory
+    owner: "{{ acme_user }}"
+    group: nginx
+    mode: 0750

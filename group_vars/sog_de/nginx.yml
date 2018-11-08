@@ -1,18 +1,28 @@
 ---
 nginx_access_log: "/var/log/nginx/access.log main"
 nginx_vhosts:
+  # initially only enable the first site, to bootstrap ssl certs via letsencrypt
   - listen: 80 default_server
+    filename: "initial.site.conf"
     server_name: _
+    state: 'present'
     extra_parameters: |
-      return 301 https://$host$request_uri
+      include snippets/acme_well_known.conf;
+
+  - listen: 80 default_server
+    filename: "default.site.conf"
+    server_name: _
+    state: 'absent'
+    extra_parameters: |
+      return 301 https://$host$request_uri;
 
   - listen: "443 ssl http2"
     server_name: "cloud.{{domain}} owncloud.{{domain}}"
-    access_log: ""
-    error_log: ""
-    state: "present"
+    access_log: "/var/log/nginx/nextcloud.access.log"
+    error_log: "/var/log/nginx/nextcloud.error.log"
+    state: "absent"
     template: "{{ nginx_vhost_template }}"
-    filename: "nextcloud.conf"
+    filename: "nextcloud.site.conf"
     extra_parameters: |
       location / {
         client_max_body_size 512M;
@@ -25,13 +35,15 @@ nginx_vhosts:
         proxy_connect_timeout 300;
       }
 
+      include snippets/acme_well_known.conf;
+
   - listen: "443 ssl http2"
     server_name: "ldap.admin.{{domain}}"
     access_log: "/var/log/nginx/phpldapadmin.access.log"
     error_log: "/var/log/nginx/phpldapadmin.error.log"
-    state: "present"
+    state: "absent"
     template: "{{ nginx_vhost_template }}"
-    filename: "nextcloud.conf"
+    filename: "ldapadmin.site.conf"
     extra_parameters: |
       location /phpldapadmin {
               alias /usr/share/phpldapadmin/htdocs;
@@ -48,3 +60,9 @@ nginx_vhosts:
               fastcgi_param SCRIPT_FILENAME $request_filename;
               include fastcgi_params;
       }
+
+      include snippets/acme_well_known.conf;
+
+acme_ssl_base_folder: /opt/mysslstuff
+acme_challenges_folder_path: "{{ acme_ssl_base_folder }}/challenges"
+acme_domains: "{{ nginx_vhosts|map(attribute='server_name')|map('split', ' ')|flatten|select('match', '.*\\..*')|list}}"
