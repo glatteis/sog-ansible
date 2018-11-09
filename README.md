@@ -10,7 +10,7 @@ ansible-galaxy install -r requirements.yml
 
 ## Usage
 
-### Dry-run
+### Syntax check
 ```
 ansible-playbook --syntax-check -i inventory.yml site.yml
 ```
@@ -22,5 +22,7 @@ ansible-playbook -C -i inventory.yml site.yml
 
 ### Deploy
 ```
-ansible-playbook -i inventory.yml site.yml
+ansible-playbook -i inventory.yml site.yml --ask-vault-pass
 ```
+
+After starting you will need to enter the vault password, so ansible can decrypt the credentials. It is made available privately.
